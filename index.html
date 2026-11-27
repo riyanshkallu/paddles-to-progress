@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paddles to Progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasion: a student-run club site, energetic but tidy, for teens, parents and local sponsors
+   IDEA the page behaves like a pickleball court seen from the baseline: court blue, green surround, white lines, the yellow ball
+   PICTURE an illustrated court in perspective with the ball arcing over the net and a paddle in the foreground
+   COLOUR court blue #1c4d9b dominant, surround green #2f7d58 support, ball yellow #dff23d accent, white lines, ink #0e1a2e
+   TYPE Archivo expanded 800 for display (sports-jersey width), Archivo normal width for text
+   LAYOUT laptop: title across the top of a blue band, court picture full-bleed beneath; phone: title, court, buttons */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0b1526);--ink:light-dark(#0e1a2e,#eef3fb);--soft:light-dark(#4a5870,#a9b7cc);--court:light-dark(#1c4d9b,#163f80);--courtdeep:light-dark(#143a78,#0e2a5a);--grass:light-dark(#2f7d58,#245f44);--ball:#dff23d;--line:light-dark(#d9e1ee,#22324d);--panel:light-dark(#f1f5fb,#111f36)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 Archivo,system-ui,sans-serif;overflow-x:clip}
+img,svg{max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-stretch:125%;font-weight:800;letter-spacing:-.02em;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(30px,4vw,46px)}
+h3{font-size:20px;font-stretch:112%;line-height:1.2}
+p{margin:0 0 14px;max-width:62ch}
+.wrap{max-width:1240px;margin:0 auto}
+.band{padding-block:clamp(44px,6vw,88px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border-radius:999px;font-weight:700;font-stretch:110%;text-decoration:none;border:2px solid transparent;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--ball);outline-offset:3px}
+.btn.yellow{background:var(--ball);color:#0e1a2e}
+.btn.ghost{border-color:currentColor;color:inherit}
+.btn.dark{background:#0e1a2e;color:#fff}
+/* nav */
+nav{position:sticky;top:0;z-index:5;background:var(--courtdeep);color:#fff}
+nav .wrap{display:flex;align-items:center;gap:20px;padding:10px max(5vw,16px);flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;font-stretch:125%;text-decoration:none;font-size:17px;margin-right:auto}
+.links{display:flex;gap:4px 18px;flex-wrap:wrap;align-items:center}
+.links a{text-decoration:none;font-weight:600;padding:8px 2px;opacity:.9}
+.links a:hover{opacity:1;text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--ball)}
+.links .btn{min-height:40px;padding:0 16px;opacity:1}
+/* hero */
+.hero{background:var(--court);color:#fff;position:relative}
+.hero .top{padding:clamp(36px,5vw,72px) max(5vw,16px) 0}
+.hero h1{font-size:clamp(40px,7vw,84px);max-width:13ch}
+.hero .lede{font-size:clamp(17px,1.6vw,20px);max-width:52ch;margin:20px 0 26px;color:#e3ebf8}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.courtfig{display:block;width:100%;height:clamp(260px,38vw,500px);margin-top:clamp(-70px,-4vw,-10px)}
+/* rally strip: where money goes */
+.flow{--g:clamp(16px,3vw,40px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--g);margin-top:34px;position:relative}
+.flow::before{content:"";position:absolute;left:44px;right:calc((100% - 2*var(--g))/3 - 44px);top:44px;border-top:3px dashed var(--line)}
+.step{position:relative;text-align:left}
+.step .ic{width:88px;height:88px;border-radius:50%;background:var(--panel);display:grid;place-items:center;margin-bottom:16px;border:3px solid var(--bg);position:relative}
+.step p{color:var(--soft);font-size:16px}
+/* about */
+.about{background:var(--panel)}
+.split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,5vw,72px);align-items:start}
+.facts{display:grid;gap:0;border-top:2px solid var(--ink)}
+.facts div{display:grid;grid-template-columns:9.5em minmax(0,1fr);gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.facts b{font-stretch:112%}
+/* play */
+.play{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:30px}
+.tile{background:var(--panel);border-radius:18px;padding:24px;border:1px solid var(--line)}
+.tile p{font-size:16px;color:var(--soft);margin:8px 0 0}
+.lvl{display:flex;gap:6px;margin-bottom:14px}
+.lvl i{width:22px;height:22px;border-radius:50%;background:var(--ball);box-shadow:inset -3px -3px 0 rgba(0,0,0,.12)}
+.lvl i.off{background:var(--line);box-shadow:none}
+/* tournaments */
+.tour{background:var(--courtdeep);color:#fff}
+.tour .soft{color:#c7d4ea}
+.ticket{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);background:#fff;color:#0e1a2e;border-radius:20px;overflow:hidden;margin-top:30px}
+.stub{background:var(--ball);padding:24px;display:flex;flex-direction:column;justify-content:space-between;border-right:3px dashed #0e1a2e;gap:16px}
+.stub .n{white-space:nowrap;font-size:clamp(44px,4.6vw,58px);font-weight:900;font-stretch:125%;line-height:.9}
+.tbody{padding:26px clamp(20px,3vw,36px)}
+.tbody h3{font-size:clamp(22px,2.6vw,30px);font-stretch:125%;margin-bottom:16px}
+.rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;margin-bottom:22px}
+.rows div{border-top:1px solid #d9e1ee;padding-top:10px;font-size:16px}
+.rows b{display:block;font-stretch:112%}
+.day{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,64px);margin-top:56px;align-items:start}
+.sched{list-style:none;margin:16px 0 0;padding:0}
+.sched li{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.18)}
+.sched time{font-size:24px;font-weight:800;font-stretch:118%;color:var(--ball);white-space:nowrap;line-height:1.1}
+.sched span{color:#dfe7f5}
+.bscroll{overflow-x:auto;margin-top:18px}.bracket{display:block;width:100%;min-width:460px;height:auto}
+.note{font-size:14px;color:#c7d4ea;margin-top:12px}
+/* give */
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:30px}
+.tier{border:2px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px}
+.tier.top{border-color:var(--court);background:var(--panel)}
+.price{font-size:36px;font-weight:900;font-stretch:125%;white-space:nowrap}
+.tier ul{margin:4px 0 0;padding-left:20px;color:var(--soft);font-size:16px}
+.tier li{margin:4px 0}
+.givehead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end}
+.pantry{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center;margin-top:64px;padding-top:48px;border-top:1px solid var(--line)}
+/* faq */
+.faq{background:var(--panel)}
+.qs{margin-top:26px;border-top:2px solid var(--ink);max-width:860px}
+details{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:18px 44px 18px 0;font-weight:700;font-stretch:108%;font-size:18px;position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";position:absolute;right:6px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;background:var(--ball);box-shadow:inset -3px -3px 0 rgba(0,0,0,.14);transition:transform .2s}
+details[open] summary::after{transform:scale(.7)}
+details p{color:var(--soft);padding-bottom:16px}
+/* close */
+.close{background:var(--ball);color:#0e1a2e}
+.close .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.close h2{font-size:clamp(34px,5vw,60px)}
+footer{background:#0e1a2e;color:#c7d4ea;font-size:15px}
+footer .wrap{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:28px}
+footer b{color:#fff;display:block;margin-bottom:8px;font-stretch:112%}
+footer a{color:#fff}
+.sample{font-size:13.5px;color:#93a3bd;margin-top:28px;border-top:1px solid #22324d;padding-top:16px}
+@media (max-width:900px){.flow,.play,.tiers{grid-template-columns:minmax(0,1fr)}.flow::before{display:none}.step{display:grid;grid-template-columns:88px minmax(0,1fr);gap:18px;align-items:center}.step .ic{margin:0}.split,.day,.pantry{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.links a:not(.btn){display:none}nav .wrap{flex-wrap:nowrap;gap:12px}.mark{font-size:15px}.courtfig .side{display:none}.ticket{grid-template-columns:minmax(0,1fr)}.stub{border-right:0;border-bottom:3px dashed #0e1a2e;flex-direction:row;align-items:end}.rows{grid-template-columns:minmax(0,1fr)}.facts div{grid-template-columns:minmax(0,1fr);gap:2px}.givehead,.close .wrap,footer .wrap{grid-template-columns:minmax(0,1fr)}.sched time{font-size:20px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+</style>
+</head>
+<body>
+<nav aria-label="Main">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Paddles to Progress home">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><g transform="rotate(-35 20 20)"><rect x="11" y="3" width="18" height="22" rx="9" fill="#dff23d"/><rect x="17.5" y="24" width="5" height="13" rx="2" fill="#fff"/></g><circle cx="31" cy="30" r="6" fill="#fff"/><circle cx="29.5" cy="28.5" r="1" fill="#1c4d9b"/><circle cx="32.5" cy="31" r="1" fill="#1c4d9b"/></svg>
+      Paddles to Progress
+    </a>
+    <div class="links">
+      <a href="#about">About</a>
+      <a href="#play">Play</a>
+      <a href="#tournaments">Tournaments</a>
+      <a href="#give">Give</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn yellow" href="https://docs.google.com/forms/d/1VuDTSoDMnR-dPemnjS3_jdGevKtRQV1vwImsA7FbpmA/viewform">Join the club</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap top">
+    <h1>Teens playing pickleball to fight hunger.</h1>
+    <p class="lede">We're a student-run club for players ages 13 to 19. We meet for open play and drills, and we run tournaments where entry fees and donations go to our partner food pantry.</p>
+    <div class="cta">
+      <a class="btn yellow" href="https://docs.google.com/forms/d/1VuDTSoDMnR-dPemnjS3_jdGevKtRQV1vwImsA7FbpmA/viewform">Join the club</a>
+      <a class="btn ghost" href="#tournaments">See tournaments</a>
+    </div>
+  </div>
+  <svg class="courtfig" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMax slice" role="img" aria-label="A pickleball court with a ball flying over the net toward the far side">
+    <defs>
+      <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a7351"/><stop offset="1" stop-color="#358a61"/></linearGradient>
+      <linearGradient id="courtg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a5fb3"/><stop offset="1" stop-color="#1f53a6"/></linearGradient>
+      <pattern id="mesh" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 0L8 8M8 0L0 8" stroke="#ffffff" stroke-opacity=".28" stroke-width="1"/></pattern>
+      <g id="hole"><circle r="3.2" fill="#b9cc1f"/></g>
+      <g id="can"><rect x="-13" y="-34" width="26" height="34" rx="3" fill="#e9edf2"/><rect x="-13" y="-25" width="26" height="14" fill="#e0533b"/><rect x="-13" y="-34" width="26" height="4" fill="#c9d0d9"/></g>
+    </defs>
+    <path d="M0 210 Q600 150 1200 210 L1200 500 L0 500Z" fill="url(#grass)"/>
+    <polygon points="440,232 760,232 1050,500 150,500" fill="url(#courtg)"/>
+    <g stroke="#fff" stroke-width="4" fill="none" stroke-linejoin="round">
+      <polygon points="440,232 760,232 1050,500 150,500"/>
+      <line x1="404" y1="290" x2="796" y2="290"/>
+      <line x1="300" y1="390" x2="900" y2="390"/>
+      <line x1="600" y1="232" x2="600" y2="290"/>
+      <line x1="600" y1="390" x2="600" y2="500"/>
+    </g>
+    <ellipse cx="600" cy="338" rx="300" ry="10" fill="#0e2a5a" opacity=".35"/>
+    <rect x="322" y="304" width="556" height="34" fill="#0e1a2e" opacity=".85"/>
+    <rect x="322" y="304" width="556" height="34" fill="url(#mesh)"/>
+    <rect x="322" y="300" width="556" height="7" rx="2" fill="#fff"/>
+    <rect x="312" y="292" width="10" height="50" rx="3" fill="#cfd8e6"/>
+    <rect x="878" y="292" width="10" height="50" rx="3" fill="#cfd8e6"/>
+    <g class="side" transform="translate(1085 300)">
+      <rect x="-50" y="0" width="100" height="62" rx="4" fill="#c58b4f"/>
+      <rect x="-50" y="0" width="100" height="14" fill="#a8733e"/>
+      <use href="#can" x="-26" y="2"/><use href="#can" x="2" y="2"/><use href="#can" x="30" y="2"/>
+      <ellipse cx="0" cy="66" rx="62" ry="7" fill="#0e1a2e" opacity=".2"/>
+    </g>
+    <path id="arc" d="M930 430 Q640 40 520 262" fill="none" stroke="#dff23d" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round" opacity=".8"/>
+    <ellipse cx="612" cy="278" rx="18" ry="5" fill="#0e1a2e" opacity=".25"/>
+    <g id="ball" transform="translate(629 182)">
+      <circle r="24" fill="#dff23d"/>
+      <path d="M-24 0A24 24 0 0 0 24 0A24 30 0 0 1 -24 0Z" fill="#c2d62a" opacity=".6"/>
+      <use href="#hole" x="-8" y="-9"/><use href="#hole" x="7" y="-12"/><use href="#hole" x="12" y="3"/><use href="#hole" x="-12" y="6"/><use href="#hole" x="1" y="11"/><use href="#hole" x="0" y="-1"/>
+      <circle cx="-9" cy="-14" r="5" fill="#fff" opacity=".55"/>
+      <animateMotion id="fly" dur="1.4s" begin="indefinite" fill="freeze" keyPoints="0;0.737" keyTimes="0;1" calcMode="spline" keySplines="0.2 0.6 0.4 1"><mpath href="#arc"/></animateMotion>
+    </g>
+    <g class="side" transform="translate(985 470) rotate(28)">
+      <ellipse cx="10" cy="40" rx="70" ry="12" fill="#0e1a2e" opacity=".18"/>
+      <rect x="-62" y="-150" width="124" height="150" rx="58" fill="#0e1a2e"/>
+      <rect x="-56" y="-144" width="112" height="138" rx="52" fill="#dff23d"/>
+      <path d="M-40 -120 Q-10 -140 30 -128" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity=".6"/>
+      <rect x="-15" y="-8" width="30" height="80" rx="8" fill="#fff"/>
+      <g stroke="#cfd8e6" stroke-width="3"><line x1="-15" y1="10" x2="15" y2="0"/><line x1="-15" y1="28" x2="15" y2="18"/><line x1="-15" y1="46" x2="15" y2="36"/><line x1="-15" y1="64" x2="15" y2="54"/></g>
+    </g>
+  </svg>
+</header>
+
+<section class="band" aria-labelledby="flow-h">
+  <div class="wrap">
+    <h2 id="flow-h">Every rally helps fill a pantry shelf</h2>
+    <div class="flow">
+      <div class="step">
+        <div class="ic"><svg width="46" height="46" viewBox="0 0 40 40" aria-hidden="true"><g transform="rotate(-35 20 20)"><rect x="11" y="3" width="18" height="22" rx="9" fill="#1c4d9b"/><rect x="17.5" y="24" width="5" height="13" rx="2" fill="#0e1a2e"/></g><circle cx="31" cy="30" r="6" fill="#dff23d" stroke="#0e1a2e" stroke-width="1.5"/></svg></div>
+        <div><h3>You play</h3><p>Sign up for a tournament with a partner and pay a small entry fee. Friends and family can donate too.</p></div>
+      </div>
+      <div class="step">
+        <div class="ic"><svg width="46" height="46" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="12" width="24" height="24" rx="5" fill="#1c4d9b"/><rect x="11" y="6" width="18" height="7" rx="2" fill="#0e1a2e"/><circle cx="20" cy="24" r="6" fill="#dff23d"/></svg></div>
+        <div><h3>We collect it</h3><p>We add up every entry fee and donation, and post the total after each event.</p></div>
+      </div>
+      <div class="step">
+        <div class="ic"><svg width="46" height="46" viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="20" width="30" height="16" rx="2" fill="#c58b4f"/><rect x="9" y="9" width="7" height="11" rx="1.5" fill="#e0533b"/><rect x="17" y="7" width="7" height="13" rx="1.5" fill="#1c4d9b"/><rect x="25" y="11" width="6" height="9" rx="1.5" fill="#2f7d58"/></svg></div>
+        <div><h3>The pantry gets it</h3><p>The money goes to our partner food pantry, so it can stock shelves for families in our community.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band about" id="about" aria-labelledby="about-h">
+  <div class="wrap split">
+    <div>
+      <h2 id="about-h">Started by friends who couldn't stop playing</h2>
+      <p style="margin-top:20px">Paddles to Progress began in 2026 with a few high school students who spent every free afternoon on the pickleball courts. We wanted a way for more teens to play, and a reason for the games to matter beyond the score.</p>
+      <p>So we built a club. Anyone ages 13 to 19 can join, from first-timers to players who think they're the best on their block. We run open play and drills, and we run tournaments that raise money for people in our community who need food.</p>
+      <p>Everything is run by students: scheduling, brackets, sponsors and this website.</p>
+    </div>
+    <div class="facts">
+      <div><b>Who can join</b><span>Ages 13 to 19, any school, any skill level</span></div>
+      <div><b>What we do</b><span>Open play, skill drills and charity tournaments</span></div>
+      <div><b>Who it helps</b><span>Our partner food pantry and the families it serves</span></div>
+      <div><b>Run by</b><span>High school students, with help from parents and volunteers</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="play" aria-labelledby="play-h">
+  <div class="wrap">
+    <h2 id="play-h">Come play with us</h2>
+    <p style="margin-top:16px">We meet weekly after school. We pick the days based on when most members are free, and post the schedule on Instagram.</p>
+    <div class="play">
+      <div class="tile"><div class="lvl" aria-hidden="true"><i></i><i class="off"></i><i class="off"></i></div><h3>New to pickleball</h3><p>We'll teach you the serve, scoring and the kitchen rule in your first session. No experience needed.</p></div>
+      <div class="tile"><div class="lvl" aria-hidden="true"><i></i><i></i><i class="off"></i></div><h3>Getting the hang of it</h3><p>Drills on dinks, third-shot drops and staying out of the kitchen, then games with players at your level.</p></div>
+      <div class="tile"><div class="lvl" aria-hidden="true"><i></i><i></i><i></i></div><h3>Ready to compete</h3><p>Fast open play, doubles strategy and practice for our tournament brackets.</p></div>
+    </div>
+    <p style="margin-top:24px;color:var(--soft)">Bring court shoes and water. Don't have a paddle yet? Tell us when you join and we'll help you find one.</p>
+  </div>
+</section>
+
+<section class="band tour" id="tournaments" aria-labelledby="tour-h">
+  <div class="wrap">
+    <h2 id="tour-h">Tournaments</h2>
+    <p class="soft" style="margin-top:16px">We host tournaments throughout the year. Each one is a full day of doubles, and the money raised goes to the pantry.</p>
+    <div class="ticket">
+      <div class="stub"><span style="font-weight:700">Next up</span><span class="n">No. 1</span></div>
+      <div class="tbody">
+        <h3>Our first tournament</h3>
+        <div class="rows">
+          <div><b>Date and courts</b>Announced soon. Join the club to hear first.</div>
+          <div><b>Who can play</b>Ages 13 to 19, from any school</div>
+          <div><b>Format</b>Doubles. Round robin pools, then a bracket</div>
+          <div><b>Divisions</b>Beginner, intermediate and advanced</div>
+          <div><b>Scoring</b>Games to 11, win by 2</div>
+          <div><b>Entry fee</b>Small fee per player, all of it raised for the pantry</div>
+        </div>
+        <a class="btn dark" href="https://docs.google.com/forms/d/1VuDTSoDMnR-dPemnjS3_jdGevKtRQV1vwImsA7FbpmA/viewform">Get notified when it opens</a>
+      </div>
+    </div>
+    <div class="day">
+      <div>
+        <h3 style="font-size:24px;font-stretch:125%">How a tournament day runs</h3>
+        <ol class="sched">
+          <li><time>8:30</time><span>Check in, sign the waiver and warm up</span></li>
+          <li><time>9:00</time><span>Round robin pools in every division</span></li>
+          <li><time>11:30</time><span>Lunch break and food drive drop-off</span></li>
+          <li><time>12:15</time><span>Bracket rounds begin</span></li>
+          <li><time>2:30</time><span>Finals, awards and the fundraising total</span></li>
+        </ol>
+        <p class="note">Sample schedule. Times will be set for each event.</p>
+      </div>
+      <div>
+        <h3 style="font-size:24px;font-stretch:125%">From pools to a champion</h3>
+        <p class="soft" style="margin-top:12px">Every team plays several games in its pool. The top teams move into a single-elimination bracket.</p>
+        <div class="bscroll"><svg class="bracket" viewBox="0 0 520 250" role="img" aria-label="Bracket: eight pool qualifiers play quarterfinals, semifinals and a final">
+          <g fill="none" stroke="#7f9ccc" stroke-width="2.5">
+            <path d="M120 22H150V52H180M120 82H150V52"/><path d="M120 142H150V172H180M120 202H150V172"/>
+            <path d="M300 52H330V112H360M300 172H330V112"/>
+          </g>
+          <g fill="#2a5fb3"><rect x="0" y="8" width="120" height="28" rx="6"/><rect x="0" y="68" width="120" height="28" rx="6"/><rect x="0" y="128" width="120" height="28" rx="6"/><rect x="0" y="188" width="120" height="28" rx="6"/><rect x="180" y="38" width="120" height="28" rx="6"/><rect x="180" y="158" width="120" height="28" rx="6"/></g>
+          <rect x="360" y="96" width="150" height="34" rx="8" fill="#dff23d"/>
+          <g font-family="Archivo,sans-serif" font-size="14" font-weight="600" fill="#fff"><text x="14" y="27">Pool A winner</text><text x="14" y="87">Pool B winner</text><text x="14" y="147">Pool C winner</text><text x="14" y="207">Pool D winner</text><text x="194" y="57">Semifinal</text><text x="194" y="177">Semifinal</text></g>
+          <text x="376" y="118" font-family="Archivo,sans-serif" font-size="15" font-weight="800" fill="#0e1a2e">Champions</text>
+          <text x="0" y="244" font-family="Archivo,sans-serif" font-size="13" fill="#c7d4ea">Bracket size depends on how many teams sign up</text>
+        </svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="give" aria-labelledby="give-h">
+  <div class="wrap">
+    <div class="givehead">
+      <div>
+        <h2 id="give-h">Sponsor a tournament</h2>
+        <p style="margin-top:16px">Local businesses help cover courts, balls and prizes, so more of every entry fee goes to the pantry. Sponsors get seen by players, parents and our followers.</p>
+      </div>
+      <a class="btn yellow" href="mailto:paddlestoprogress@gmail.com?subject=Sponsoring%20Paddles%20to%20Progress">Email us about sponsoring</a>
+    </div>
+    <div class="tiers">
+      <div class="tier"><h3>Rally sponsor</h3><span class="price">$100</span><ul><li>Your logo on our website</li><li>A thank-you post on Instagram</li></ul></div>
+      <div class="tier top"><h3>Kitchen sponsor</h3><span class="price">$250</span><ul><li>Everything in Rally</li><li>Your logo on tournament t-shirts</li><li>A banner at the courts</li></ul></div>
+      <div class="tier"><h3>Championship sponsor</h3><span class="price">$500</span><ul><li>Everything in Kitchen</li><li>The finals court named after you</li><li>You present the awards</li></ul></div>
+    </div>
+    <div class="pantry">
+      <svg viewBox="0 0 220 180" role="img" aria-label="A box of canned food">
+        <ellipse cx="110" cy="168" rx="100" ry="10" fill="var(--line)"/>
+        <rect x="40" y="18" width="32" height="56" rx="4" fill="#e0533b"/><rect x="40" y="18" width="32" height="8" fill="#b9402d"/>
+        <rect x="78" y="6" width="34" height="68" rx="4" fill="#1c4d9b"/><rect x="78" y="6" width="34" height="8" fill="#143a78"/>
+        <rect x="118" y="26" width="30" height="48" rx="4" fill="#2f7d58"/><rect x="118" y="26" width="30" height="8" fill="#245f44"/>
+        <circle cx="168" cy="54" r="20" fill="#dff23d"/><circle cx="162" cy="48" r="3" fill="#b9cc1f"/><circle cx="174" cy="56" r="3" fill="#b9cc1f"/><circle cx="164" cy="62" r="3" fill="#b9cc1f"/>
+        <rect x="20" y="70" width="180" height="96" rx="6" fill="#c58b4f"/><rect x="20" y="70" width="180" height="22" fill="#a8733e"/>
+      </svg>
+      <div>
+        <h2 style="font-size:clamp(26px,3vw,36px)">Our partner food pantry</h2>
+        <p style="margin-top:14px">We've partnered with a local food pantry that provides groceries to families in our area. We'll share their story here soon.</p>
+        <p>You can help at every tournament: bring canned or boxed food to drop off at check-in, or volunteer for scorekeeping and setup.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap">
+    <h2 id="faq-h">Questions</h2>
+    <div class="qs">
+      <details><summary>Do I need experience to join?</summary><p>No. Lots of our members started with us. We split drills and games by skill level so everyone gets good rallies.</p></details>
+      <details><summary>Can I join if I go to a different school?</summary><p>Yes. Any student ages 13 to 19 can join the club and play in our tournaments.</p></details>
+      <details><summary>What if I don't have a doubles partner?</summary><p>Sign up alone and we'll pair you with someone at your level.</p></details>
+      <details><summary>Do players under 18 need a parent's permission?</summary><p>Yes. A parent or guardian signs a waiver before you play in a tournament.</p></details>
+      <details><summary>Where does the money go?</summary><p>To our partner food pantry. We post the total raised after every tournament.</p></details>
+      <details><summary>Can adults play?</summary><p>Our club and tournaments are for teens, but parents and friends are welcome to watch, cheer and volunteer.</p></details>
+      <details><summary>Can I volunteer?</summary><p>Yes. We need help with check-in, scorekeeping and setup at each tournament. Email us to sign up.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="band close" aria-labelledby="close-h">
+  <div class="wrap">
+    <div>
+      <h2 id="close-h">See you on the court.</h2>
+      <p style="margin-top:14px;font-size:18px">Join the club to get the open play schedule and first word on tournaments.</p>
+    </div>
+    <div class="cta">
+      <a class="btn dark" href="https://docs.google.com/forms/d/1VuDTSoDMnR-dPemnjS3_jdGevKtRQV1vwImsA7FbpmA/viewform">Join the club</a>
+      <a class="btn ghost" href="https://www.instagram.com/paddlestoprogress/">Follow on Instagram</a>
+    </div>
+  </div>
+</section>
+
+<footer class="band">
+  <div class="wrap">
+    <div>
+      <b>Paddles to Progress</b>
+      <p>A student-run pickleball club for ages 13 to 19, raising money for our local food pantry.</p>
+    </div>
+    <div>
+      <b>Contact</b>
+      <p><a href="mailto:paddlestoprogress@gmail.com">paddlestoprogress@gmail.com</a><br><a href="https://www.instagram.com/paddlestoprogress/">@paddlestoprogress on Instagram</a></p>
+    </div>
+    <div>
+      <b>Explore</b>
+      <p><a href="#play">Play</a><br><a href="#tournaments">Tournaments</a><br><a href="#give">Sponsor</a><br><a href="#faq">Questions</a></p>
+    </div>
+  </div>
+  <div class="wrap"><p class="sample">Sample details: the email address, Instagram handle, sponsor prices and tournament schedule are placeholders until the team confirms them.</p></div>
+</footer>
+
+<script>
+{
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ball = document.getElementById('ball');
+  const fly = document.getElementById('fly');
+  if (!reduce && ball && fly && fly.beginElement) {
+    ball.removeAttribute('transform');
+    setTimeout(() => { try { fly.beginElement(); } catch (e) { ball.setAttribute('transform', 'translate(629 182)'); } }, 350);
+  }
+}
+</script>
+</body>
+</html>
